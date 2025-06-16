@@ -1,11 +1,11 @@
 
 
 output "al2-ssh-login" {
-  value = "ssh ${local.ssh_user}@${aws_instance.website.public_ip} -i local-key" #UBUNTU
+  value = "ssh ${local.ssh_user}@${aws_instance.test_wordpress.public_ip} -i local-key" #UBUNTU
 }
 
 output "wordpress-url" {
-  value = "http://${aws_instance.website.public_ip}"
+  value = "http://${aws_instance.test_wordpress.public_ip}/wp-admin"
 }
 
 

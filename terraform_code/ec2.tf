@@ -1,7 +1,7 @@
 
 
 #################### Bastion Host ###########################
-resource "aws_instance" "website" {
+resource "aws_instance" "test_wordpress" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.subnet-1.id
@@ -15,7 +15,7 @@ resource "aws_instance" "website" {
     http_tokens   = "optional"
   }
 
-  # user_data = file("userdata.sh")
+  user_data = file("userdata.sh")
 
   tags = {
     Name = "Wordpress Website"

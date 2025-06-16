@@ -1,73 +1,50 @@
 #!/bin/bash
 
-# #web server install
-# sudo yum install -y httpd
-# sudop sysmctl enable http --now
+# Update system
+sudo apt update -y
+sudo apt upgrade -y
 
-# #firewall iadjustment
-# sudo firewall-cmd --add-service=http --permanent
-# sudo firewall-cmd --reload
+# Install dependencies
+sudo apt install -y apache2 php libapache2-mod-php php-mysql php-gd php-xml php-mbstring php-curl php-zip mariadb-server curl unzip
 
-# #Using meta data to get instance info
-# AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
+# Enable + start services
+sudo systemctl enable apache2 --now
+sudo systemctl enable mariadb --now
 
-# # What will show on the web page
-# echo "<h1> Hello from Apache on AL2 </h1>" | sudo tee /var/www/html/index.html
-# echo "<p> This Instance is running in AZ: $AZ</p>" | sudo tee -a /var/www/html/index.html
+# Secure MariaDB (non-interactive)
+sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'RootStrongPass123';"
+sudo mysql -uroot -pRootStrongPass123 -e "DELETE FROM mysql.user WHERE User='';"
+sudo mysql -uroot -pRootStrongPass123 -e "DROP DATABASE IF EXISTS test;"
+sudo mysql -uroot -pRootStrongPass123 -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+sudo mysql -uroot -pRootStrongPass123 -e "FLUSH PRIVILEGES;"
 
-# # turn it off and back on. Always
-# sudo systemctl restart httpd
-
-
-
-
-#!/bin/bash
-
-# Update system packages
-apt update -y
-apt upgrade -y
-
-# Install Apache, PHP, MariaDB (and PHP modules WordPress needs)
-apt install -y apache2 php libapache2-mod-php php-mysql php-gd php-xml php-mbstring php-curl php-zip mariadb-server curl unzip
-
-# Enable and start services
-systemctl enable apache2 --now
-systemctl enable mariadb --now
-
-# Secure MariaDB
-mysql -e "UPDATE mysql.user SET authentication_string=PASSWORD('RootStrongPass123!') WHERE User='root';"
-mysql -e "DELETE FROM mysql.user WHERE User='';"
-mysql -e "DROP DATABASE IF EXISTS test;"
-mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
-mysql -e "FLUSH PRIVILEGES;"
-
-# Create WordPress DB and user
+# Create DB + user ## ENV Variables getting SET
 DBNAME="wordpress_db"
 DBUSER="wp_user"
-DBPASS="WpUserStrongPass123!"
+DBPASS="WpUserStrongPass123"
 
-mysql -uroot -pRootStrongPass123! -e "CREATE DATABASE ${DBNAME} DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
-mysql -uroot -pRootStrongPass123! -e "CREATE USER '${DBUSER}'@'localhost' IDENTIFIED BY '${DBPASS}';"
-mysql -uroot -pRootStrongPass123! -e "GRANT ALL PRIVILEGES ON ${DBNAME}.* TO '${DBUSER}'@'localhost';"
-mysql -uroot -pRootStrongPass123! -e "FLUSH PRIVILEGES;"
+sudo mysql -uroot -pRootStrongPass123 -e "CREATE DATABASE ${DBNAME} CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
+sudo mysql -uroot -pRootStrongPass123 -e "CREATE USER '${DBUSER}'@'localhost' IDENTIFIED BY '${DBPASS}';"
+sudo mysql -uroot -pRootStrongPass123 -e "GRANT ALL PRIVILEGES ON ${DBNAME}.* TO '${DBUSER}'@'localhost';"
+sudo mysql -uroot -pRootStrongPass123 -e "FLUSH PRIVILEGES;"
 
-# Download WordPress
+# Download + set up WordPress
 cd /var/www/html
-curl -O https://wordpress.org/latest.tar.gz
-tar -xzf latest.tar.gz
-cp -r wordpress/* .
-rm -rf wordpress latest.tar.gz
+sudo curl -O https://wordpress.org/latest.tar.gz
+sudo tar -xzf latest.tar.gz
+sudo cp -r wordpress/* .
+sudo rm -rf wordpress latest.tar.gz
 
 # Set permissions
-chown -R www-data:www-data /var/www/html
-find /var/www/html -type d -exec chmod 755 {} \;
-find /var/www/html -type f -exec chmod 644 {} \;
+sudo chown -R www-data:www-data /var/www/html
+sudo find /var/www/html -type d -exec chmod 755 {} \;
+sudo find /var/www/html -type f -exec chmod 644 {} \;
 
-# Create wp-config.php
-cp wp-config-sample.php wp-config.php
-sed -i "s/database_name_here/${DBNAME}/" wp-config.php
-sed -i "s/username_here/${DBUSER}/" wp-config.php
-sed -i "s/password_here/${DBPASS}/" wp-config.php
+# Configure wp-config.php
+sudo cp wp-config-sample.php wp-config.php
+sudo sed -i "s/database_name_here/${DBNAME}/" wp-config.php
+sudo sed -i "s/username_here/${DBUSER}/" wp-config.php
+sudo sed -i "s/password_here/${DBPASS}/" wp-config.php
 
 # Restart Apache
-systemctl restart apache2
+sudo systemctl restart apache2
