@@ -46,5 +46,8 @@ sudo sed -i "s/database_name_here/${DBNAME}/" wp-config.php
 sudo sed -i "s/username_here/${DBUSER}/" wp-config.php
 sudo sed -i "s/password_here/${DBPASS}/" wp-config.php
 
+# Remove Ubuntu Landing Page
+sudo rm /var/www/html/index.html
+
 # Restart Apache
 sudo systemctl restart apache2
