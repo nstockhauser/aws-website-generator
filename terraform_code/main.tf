@@ -120,8 +120,8 @@ resource "aws_security_group" "website" {
 
 locals {
   ssh_user = (
-    aws_instance.website.ami == data.aws_ami.amazon.id ? "ec2-user" :
-    aws_instance.website.ami == data.aws_ami.ubuntu.id ? "ubuntu" :
+    aws_instance.test_wordpress.ami == data.aws_ami.amazon.id ? "ec2-user" :
+    aws_instance.test_wordpress.ami == data.aws_ami.ubuntu.id ? "ubuntu" :
     "ec2-user"
   )
 }
