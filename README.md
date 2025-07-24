@@ -1,6 +1,30 @@
-This is a Beginner AWS lab covering a couple different concepts at a very surface level, but its point is to show how all of these concepts, technologies and skills can be used together. It's also to better learn the developer side of cloud deployment and Infrastructure as Code. It starts with a primer into the AWS console and CLI, covering IAM accounts, how the cli is structured in your local workstation, and how it functions. Then we utilize some python scripts using the BOTO3 AWS SDK, covering what that means and why it is used. After that we cover Terraform, what infrastructure as Code is and how ours works to achieve what we want.
+Pre reqs:
+aws account
+Aws user with access and secret access keys. 
+aws configure on your own terminal: 
 
-At the end, you won't have built a new Netflix Application But, you will have a web server, on the internet in the AWS cloud that is a running website (a hello world website but still a website), using Python and terraform in a way that allows you to stand it up and tear it down in minutes.
+
+python
+terraform
+pip
+awscli
+
+Destroy.py
+import boto3
+import os
+from InquirerPy import inquirer
+
+
+Generate.py
+import os
+from jinja2 import Environment, FileSystemLoader
+import random
+import string
+import boto3
+from InquirerPy import inquirer
+
+
+the rest of this Readme.md is not completed or relevant. 
 
 ## Project Structure:
 
