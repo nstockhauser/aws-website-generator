@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket         = "min6m7wnnblqp27ie4pf9fupw"
-    key            = "tf-dev/terraform.tfstate"
-    region         = "us-east-1"
+    bucket         = "{{ bucket }}"
+    key            = "wordpress/terraform.tfstate"
+    region         = "{{ region }}"
     dynamodb_table = "terraform-state-locking"
     encrypt        = true
   }
@@ -26,18 +26,14 @@ terraform {
   }
 }
 
-#### Windows
 provider "aws" {
-  shared_config_files      = ["${pathexpand("~/.aws/config")}"]
-  shared_credentials_files = ["${pathexpand("~/.aws/credentials")}"]
-  profile                  = "tf-user"
-  region                   = "us-east-1"
+  region = "{{ region }}"
 
 
 
   default_tags {
     tags = {
-      Environment = "Lab"
+      Environment = "Wordpress"
     }
   }
 
