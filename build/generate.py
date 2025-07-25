@@ -132,7 +132,7 @@ for template_file in template_files:
     with open(output_path, "w") as f:
         f.write(rendered)
 
-print(f"\n✅ Terraform Provider File generated for Wordpress")
+print(f"\n✅ Terraform Provider File generated for Wordpress\n")
 
 
 

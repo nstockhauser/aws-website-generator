@@ -5,7 +5,7 @@ This repository is a **two‑part automation sandbox** that demonstrates buildin
 It contains:
 
 - **bootstrap/** – A Python automation lesson with scripts to generate and destroy Terraform backend configuration.
-- **wordpress_tf/** – Terraform configuration that deploys a WordPress server.
+- **wordpress/** – Terraform configuration that deploys a WordPress server.
 
 ---
 
@@ -30,14 +30,14 @@ Make sure these are installed at the system level before you begin:
 - Creates:
   - An S3 bucket for your Terraform backend.
   - A DynamoDB table for state locking.
-  - A `providers.tf` in `wordpress_tf/` with region-specific values.
+  - A `providers.tf` in `wordpress/` with region-specific values.
 - Picks a random default subnet in your chosen region.
 
 ### `bootstrap/teardown.py`
 
 - Cleans up:
   - Removes the S3 bucket and DynamoDB table created during generation.
-  - Deletes the generated `providers.tf` in `wordpress_tf/`.
+  - Deletes the generated `providers.tf` in `wordpress/`.
 - Effectively **zeroizes** the repo for that region.
 
 ---
@@ -89,16 +89,16 @@ The script will prompt for a region.
 After running:
 
 - S3 bucket and DynamoDB table are created.
-- A customized `providers.tf` is written into `wordpress_tf/`.
+- A customized `providers.tf` is written into `wordpress/`.
 
 ---
 
 ### ✅ Step 3: Deploy WordPress
 
-Navigate to the **wordpress_tf** folder:
+Navigate to the **wordpress** folder:
 
 ```bash
-cd ../wordpress_tf
+cd ../wordpress
 terraform init
 terraform apply
 # Type "yes" when prompted
@@ -149,7 +149,7 @@ wordpress-generator/
 │   ├── templates/
 │   │   ├── providers.tf.j2
 │   ├── userdata.sh
-├── wordpress_tf/
+├── wordpress/
 │   ├── data.tf
 │   ├── main.tf
 │   ├── outputs.tf
@@ -171,9 +171,8 @@ curl https://ipinfo.io/ip
 ## 🌱 Future Ideas
 
 - Add **Apache web server** option (HTML/CSS/JS deployment).
-- Add a **tracking system** to log deployed regions and resources.
-- Implement a **least‑privilege IAM policy**.
 - Add remove .terraform\* files from wordpress/
+- make it site focused, so generate creates site folder and destrly relative to site.
 - Cleanup README.md
 
 ---

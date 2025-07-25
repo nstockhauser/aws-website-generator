@@ -1,6 +1,8 @@
 import boto3
 import os
 from InquirerPy import inquirer
+import shutil
+import glob
 
 
 regions = [
@@ -74,3 +76,23 @@ if os.path.exists(provider_file):
     print(f"✅ Deleted {provider_file}")
 else:
     print(f"⚠️ File not found: {provider_file}")
+
+
+
+# 👇 choose the base directory you want to search in
+base_dir = "../wordpress"
+pattern = ".terraform*"
+
+# Build the full search pattern
+search_pattern = os.path.join(base_dir, pattern)
+
+for path in glob.glob(search_pattern):
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+        print(f"✅ Deleted directory: {path}")
+    elif os.path.isfile(path):
+        os.remove(path)
+        print(f"✅ Deleted file: {path}")
+    else:
+        print(f"⚠️ Not found or unknown type: {path}")
+

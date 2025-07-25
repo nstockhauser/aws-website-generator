@@ -32,14 +32,7 @@ resource "aws_security_group_rule" "allow_in_22" {
   security_group_id = data.aws_security_group.default.id
 }
 
-# resource "aws_security_group_rule" "allow_out_any" {
-#   type = "egress"
-#   from_port = 0
-#   to_port = 0
-#   protocol = -1
-#   cidr_blocks = ["0.0.0.0/0"]
-#   security_group_id = data.aws_security_group.default.id
-# }
+
 
 
 
@@ -61,7 +54,7 @@ resource "aws_instance" "website" {
     http_tokens   = "optional"
   }
 
-  user_data = file("../build/userdata.sh")
+  user_data = file("../build/wordpress.sh")
 
   tags = {
     Name = "Website"
