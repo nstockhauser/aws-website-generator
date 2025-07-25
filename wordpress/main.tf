@@ -48,7 +48,7 @@ resource "aws_security_group_rule" "allow_in_22" {
 
 
 #################### Bastion Host ###########################
-resource "aws_instance" "wordpress" {
+resource "aws_instance" "website" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
   subnet_id                   = random_shuffle.subnet_pick.result[0]
@@ -64,7 +64,7 @@ resource "aws_instance" "wordpress" {
   user_data = file("../build/userdata.sh")
 
   tags = {
-    Name = "Wordpress Website"
+    Name = "Website"
   }
 
 }

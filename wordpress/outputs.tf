@@ -1,11 +1,11 @@
 
 
 output "instance-ssh-login" {
-  value = "ssh ubuntu@${aws_instance.wordpress.public_ip} -i local-key"
+  value = "ssh ubuntu@${aws_instance.website.public_ip} -i local-key"
 }
 
 output "wordpress-url" {
-  value = "http://${aws_instance.wordpress.public_ip}/wp-admin"
+  value = "http://${aws_instance.website.public_ip}/wp-admin"
 }
 
 

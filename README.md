@@ -1,214 +1,179 @@
-Pre reqs:
-aws account
-Aws user with access and secret access keys. 
-aws configure on your own terminal: 
+# WordPress Generator
 
+This repository is a **two‑part automation sandbox** that demonstrates building and tearing down infrastructure using Python and Terraform on AWS.
 
-python
-terraform
-pip
-awscli
+It contains:
 
-Destroy.py
-import boto3
-import os
-from InquirerPy import inquirer
-
-
-Generate.py
-import os
-from jinja2 import Environment, FileSystemLoader
-import random
-import string
-import boto3
-from InquirerPy import inquirer
-
-
-the rest of this Readme.md is not completed or relevant. 
-
-## Project Structure:
-
-```bash
-aws-tf-python-basics/
-├── README.md
-├── statelock_works.PNG
-├── python_code/
-│   ├── s3_bucket.txt
-│   ├── tf_bootstrap.py
-│   ├── tf_teardown.py
-├── terraform_code/
-│   ├── data.tf
-│   ├── ec2.tf
-│   ├── main.tf
-│   ├── outputs.tf
-│   ├── providers.tf
-│   ├── userdata.sh
-│   ├── variables.tf
-```
-
-## AWS Setup
-
-- Active AWS Account
-
-  - This is all done through the AWS website and it does require a credit card on file, you can still complete this project on a free tier account.
-
-- AWS CLIv2 installed locally
-
-  - This link is incredibly useful and will help you set this up regardless of OS. [Installing or updating to the latest version of the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-
-- Developer User and AccessKeys
-  - This is done through the Identity Access Management (IAM) service inside of the AWS Console. You will first make a new user: [Create an IAM user in your AWS account](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html)
-    - :exclamation: You do not need Console Access, but you do need to assign the AdministratorAccess IAM policy to this user.
-  - Then you have to create AccessKeys for programmatic Access for that user in the AWS console **Make sure to download the CSV**: [Create new access keys for an IAM user](https://docs.aws.amazon.com/keyspaces/latest/devguide/create.keypair.html)
-- Now you need to use the terminal box in your vscode editor and enter
-
-```bash
-aws configure
-
-
-# follow the prompts with this information
-AccessKey: See CSV you downloaded earlier
-SecretKey: See CSV you downloaded earlier
-region: us-east-1
-output: json
-```
-
-To validate you did this all correctly run the command
-
-```bash
-aws sts get-caller-identity
-
-
-## you should see something like this:
-{
-    "UserId": "AIDA2CEXAMPLEMKKXQ",
-    "Account": "123456789101",
-    "Arn": "arn:aws:iam::123456789101:user/developer"
-}
-```
-
-## Python Setup
-
-- First we need to cover the prerequisites:
-  You need to install python v3, [Download Python](https://www.python.org/downloads/), make sure you add the to PATH (the optional setting when installing python)
-- Verify python is installed:
-
-```bash
-python --version
-Python 3.12.2
-```
-
-- Install dependencies
-  - pip (python package installer): [install pip](https://bootstrap.pypa.io/get-pip.py)
-
-```bash
-# verify pip install
-pip --version
-
-
-# use pip to install other dependencies
-pip install boto3
-pip install botocore
-```
-
-## Terraform Setup
-
-- [Terraform install](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) this covers major operating system differences
-
-```bash
-#verify Terraform was installed
-terraform --version
-```
-
-## How to Use
-
-Under the python folder run `python tf_bootstrap.py`, This will create and output the following:
-
-- S3 bucket for your remote backend state location
-- Dynamodb Table for State locking functionality
-- IAM user called "tf-user" with credentials
-
-After you run the tf_bootstrap.py you have to copy and paste the new tf-user credentials and configs into the appropriate files (**~/.aws/config** and **~/.aws/credentials**) and update the provider file in the **terraform/providers.tf** file.
-
-```bash
-#######  IAM TF-User information ##############
-
-
-Copy this into the ~/user/.aws/credentials file
-
-
-[tf-user]
-aws_access_key_id = EXAMPLELQ7VCRJVXP4VH6
-aws_secret_access_key = EXAMPLEV7eY7iAOBCVWvyy4nmZqZhgnJX6YEW
-
-
-Copy this under the ~/user/.aws/config file
-
-
-[tf-user]
-region = us-east-1
-output = json
-
-
-```
-
-```bash
-#######  S3 Bucket Info ##############
-
-
-Bucket Name: 1z5s9grnp8audqovsrnck2huz created successfully
-
-
-Replace the backend resource block in the provider tab with:
-
-
-  backend "s3" {
-    bucket         = "1z5s9grnp8audqovsrnck2huz"
-    key            = "tf-dev/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-state-locking"
-    encrypt        = true
-  }
-```
-
-Now move into the terraform folder and run:
-
-```bash
-# Initialize your Terraform providers
-terraform init
-
-
-#Show what is going to be built
-terraform plan
-
-
-#Actually build the infrastructure
-terraform apply -y
-```
-
-This will create the network infrastructure and systems for this project and will output the following values:
-
-- an SSH command you can copy and paste to get into the server
-- your Public IP address (for validation)
-- the url of the public website.
-
-## Cleanup
-
-1. In the terraform repo, run `terraform destroy`
-2. delete local terraform files from repo (**.terraform** and **.terraform.lock.hcl**)
-3. run the `python python/tf_teardown.py` script
-4. delete the tf-user credentials and configs in your **~/.aws/config** and **~/.aws/credentials** folder
-5. In both **python/s3_bucket.txt** and in **terraform/providers.tf** replace the bucket string with <placeholder>
-
-Useful Commands:
-curl https://ipinfo.io/ip
--> Grab Public IP. (output as string)
+- **bootstrap/** – A Python automation lesson with scripts to generate and destroy Terraform backend configuration.
+- **wordpress_tf/** – Terraform configuration that deploys a WordPress server.
 
 ---
 
-### Future release notes:
+## 📦 Dependencies
 
-- Cloudformation for initial IAM user creation
-- More secure custom policies instead of AdminAccess
-- Companion Video on Youtube
-- Companion Blog on Website
+Make sure these are installed at the system level before you begin:
+
+- [Python](https://www.python.org/downloads/)
+- [Terraform](https://developer.hashicorp.com/terraform/install)
+- [pip](https://pip.pypa.io/en/stable/installation/)
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- [Git](https://git-scm.com/) _(optional but recommended)_
+
+---
+
+## 🏗️ Scripts Overview
+
+### `bootstrap/generator.py`
+
+- Uses **jinja2** to process `templates/providers.tf.j2`.
+- Prompts for a region.
+- Creates:
+  - An S3 bucket for your Terraform backend.
+  - A DynamoDB table for state locking.
+  - A `providers.tf` in `wordpress_tf/` with region-specific values.
+- Picks a random default subnet in your chosen region.
+
+### `bootstrap/teardown.py`
+
+- Cleans up:
+  - Removes the S3 bucket and DynamoDB table created during generation.
+  - Deletes the generated `providers.tf` in `wordpress_tf/`.
+- Effectively **zeroizes** the repo for that region.
+
+---
+
+## 🚀 Standard Operating Procedure (SoP)
+
+Before you run anything, make sure you’ve done these three things manually:
+
+1. **AWS Account:**  
+   Have an AWS account (Free Tier is fine).
+
+2. **AWS User:**  
+   Create a user with permissions and programmatic access credentials saved locally.
+
+3. **Dependencies Installed:**  
+   Ensure Python, Terraform, AWS CLI, and pip are installed.
+
+---
+
+### ✅ Step 1: Configure AWS Credentials
+
+Run:
+
+```bash
+aws configure
+```
+
+Provide:
+
+- Access Key & Secret Key
+- Default region (not critical for deployment)
+- Default output: `json`
+
+---
+
+### ✅ Step 2: Generate Terraform Backend
+
+Navigate to the **bootstrap** folder:
+
+```bash
+cd bootstrap
+python generator.py
+```
+
+The script will prompt for a region.  
+**Requirements:**  
+✅ Default VPC and related services must still exist in that region.
+
+After running:
+
+- S3 bucket and DynamoDB table are created.
+- A customized `providers.tf` is written into `wordpress_tf/`.
+
+---
+
+### ✅ Step 3: Deploy WordPress
+
+Navigate to the **wordpress_tf** folder:
+
+```bash
+cd ../wordpress_tf
+terraform init
+terraform apply
+# Type "yes" when prompted
+```
+
+Terraform will:
+
+- Launch a WordPress server in the selected region.
+- Lock down SSH access to **your public IP only**.
+- Generate an ephemeral key pair in your local directory so you can SSH into the instance directly.
+- Randomly pick a default subnet in that region.
+
+---
+
+### 🗑️ Step 4: Tear Down
+
+To clean up:
+
+1. **Destroy the WordPress deployment:**
+
+```bash
+terraform destroy
+# Type "yes" when prompted
+```
+
+2. **Destroy the backend resources:**
+
+```bash
+cd ../bootstrap
+python teardown.py
+```
+
+This will remove:
+
+- S3 bucket and DynamoDB table.
+- The generated `providers.tf` file.
+
+---
+
+## 📂 Project Structure
+
+```bash
+wordpress-generator/
+├── README.md
+├── bootstrap/
+│   ├── generator.py
+│   ├── teardown.py
+│   ├── templates/
+│   │   ├── providers.tf.j2
+│   ├── userdata.sh
+├── wordpress_tf/
+│   ├── data.tf
+│   ├── main.tf
+│   ├── outputs.tf
+│   ├── providers.tf   # (Generated by generator.py)
+```
+
+---
+
+## 🔧 Useful Commands
+
+Get your public IP:
+
+```bash
+curl https://ipinfo.io/ip
+```
+
+---
+
+## 🌱 Future Ideas
+
+- Add **Apache web server** option (HTML/CSS/JS deployment).
+- Add a **tracking system** to log deployed regions and resources.
+- Implement a **least‑privilege IAM policy**.
+
+---
+
+**Enjoy automating! 🚀**
