@@ -171,9 +171,15 @@ curl https://ipinfo.io/ip
 ## 🌱 Future Ideas
 
 - Add **Apache web server** option (HTML/CSS/JS deployment).
-- Add remove .terraform\* files from wordpress/
-- make it site focused, so generate creates site folder and destrly relative to site.
+- adjust to be able to launch eiother apache or wordpress
 - Cleanup README.md
+
+Bugs:
+
+- need a seperate URL basic on website type(need to fix in general) ssh -i "instance-key.pem" ubuntu@ec2-54-215-152-142.us-west-1.compute.amazonaws.com
+- I actually do want to make a depoyment tool to support multiple clients.
+  -- I need a central s3 bucket, and a per website key for the state file.
+  -- website based destroy/state.
 
 ---
 

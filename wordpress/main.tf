@@ -54,7 +54,7 @@ resource "aws_instance" "website" {
     http_tokens   = "optional"
   }
 
-  user_data = file("../build/wordpress.sh")
+  user_data = file("../build/apache.sh")
 
   tags = {
     Name = "Website"
