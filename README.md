@@ -173,6 +173,8 @@ curl https://ipinfo.io/ip
 - Add **Apache web server** option (HTML/CSS/JS deployment).
 - Add a **tracking system** to log deployed regions and resources.
 - Implement a **least‑privilege IAM policy**.
+- Add remove .terraform\* files from wordpress/
+- Cleanup README.md
 
 ---
 
