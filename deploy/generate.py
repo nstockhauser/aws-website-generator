@@ -21,20 +21,23 @@ regions = [
 
 
 def get_unique_dir_name():
+
     website_name = input("What's the name of your website?\n> ")
     website_type = inquirer.select(
         message="Which kind of website do you want to build?",
         choices=websites
     ).execute()
 
-    dir_name = website_name + website_type
-    if os.path.exists(dir_name):
-        print(f"⚠️ Directory '{dir_name}' already exists. Try again.")
+    dir_name = website_name + "-" + website_type
+    relative_path = os.path.join("sites", dir_name)
+
+    if os.path.exists(relative_path):
+        print(f"\n⚠️   Directory '{dir_name}' already exists. Try again.\n")
         return get_unique_dir_name()  # recursion
     return website_name, website_type, dir_name
 
 
-website_namqe, website_type, dir_name = get_unique_dir_name()
+website_name, website_type, dir_name = get_unique_dir_name()
 
 
 
@@ -47,15 +50,12 @@ region = inquirer.select(
 ).execute()
 
 
-def create_bucket(region):
-
+def create_bucket():
 
     # Check if S3 bucket already exists:
-    s3_client = boto3.client('s3', region_name=region)
+    s3_client = boto3.client('s3', region_name="us-east-1")
 
-    # get bucket_name
     bucket_list = s3_client.list_buckets()
-
     bucket_name = None
 
     for bucket in bucket_list['Buckets']:
@@ -71,16 +71,8 @@ def create_bucket(region):
     random_string = ''.join(random.choice(characters) for _ in range(4))
     bucket_name = "websites-tf-" + random_string
 
-    print(bucket_name)
 
-
-    if region == "us-east-1":
-        s3_client.create_bucket(Bucket=bucket_name)
-    else:
-        s3_client.create_bucket(
-            Bucket=bucket_name,
-            CreateBucketConfiguration={'LocationConstraint': region}
-        )
+    s3_client.create_bucket(Bucket=bucket_name)
 
     # Enable Versioning
     s3_client.put_bucket_versioning(
@@ -148,8 +140,8 @@ def create_dynamodb_table(region):
 
 ################ Run AWS functions ################
 
-bucket_name = create_bucket(region)
-create_dynamodb_table(region)
+bucket_name = create_bucket()
+create_dynamodb_table("us-east-1")
 
 
 
@@ -158,7 +150,7 @@ create_dynamodb_table(region)
 
 
 # Makes initial Folder 
-output_dir = os.path.join( "..", dir_name)
+output_dir = os.path.join( "sites", dir_name)
 os.makedirs(output_dir, exist_ok=True)
 
 
@@ -170,8 +162,8 @@ env = Environment(loader=FileSystemLoader(template_dir))
 context = {
     "bucket": bucket_name,
     "region": region,
-    "website-type": website_type,
-    "website-name": website_name
+    "type": website_type,
+    "name": website_name
 }
 
 # === Step 4: List of template files to process ===

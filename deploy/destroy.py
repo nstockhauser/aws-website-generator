@@ -5,22 +5,26 @@ import shutil
 import glob
 
 
-regions = [
-    "us-east-1",
-    "us-east-2",
-    "us-west-1",
-    "us-west-2"
+
+
+##Core or Website?
+
+destroy_options = [
+    "core",
+    "website"
 ]
 
-region = inquirer.select(
-    message="Which Region do you want to Tear Down?",
-    choices=regions
+destroy = inquirer.select(
+    message="Which do you want to destroy",
+    choices=destroy_options
 ).execute()
 
-# Delete Bucket
-def delete_bucket(region):
+#Core portion
 
-    s3_client = boto3.client('s3', region_name=region)
+# Delete Bucket
+def delete_bucket():
+
+    s3_client = boto3.client('s3')
 
     # get bucket_name
     bucket_list = s3_client.list_buckets()
@@ -28,7 +32,7 @@ def delete_bucket(region):
     bucket_name = None
 
     for bucket in bucket_list['Buckets']:
-        if bucket ['Name'].startswith('wordpress-tf-'):
+        if bucket ['Name'].startswith('websites-tf-'):
             bucket_name = bucket['Name']
             break
 
@@ -66,33 +70,37 @@ def delete_db_table(region):
 
 
 
-delete_bucket(region)
-delete_db_table(region)
+## Website portion
+def delete_website_folder():
+    base_dir = "sites/"
 
-provider_file = "../wordpress/providers.tf"
+    dir_choices = [
+        name for name in os.listdir(base_dir)
+        if os.path.isdir(os.path.join(base_dir, name))
+    ]
 
-if os.path.exists(provider_file):
-    os.remove(provider_file)
-    print(f"✅ Deleted {provider_file}")
+    dir_to_delete = inquirer.select(
+        message="Which website do you want to remove?",
+        choices = dir_choices
+    ).execute()
+
+    target_path = os.path.join(base_dir,dir_to_delete)
+    shutil.rmtree(target_path)
+    print(f"✅ Deleted directory: {target_path}")
+
+# def delete_website_state():
+
+
+
+
+# Basic decision logic
+
+if destroy == "core":
+    delete_bucket()
+    delete_db_table("us-east-1")
 else:
-    print(f"⚠️ File not found: {provider_file}")
+    delete_website_folder()
+    # delete_website_state()
 
 
-
-# 👇 choose the base directory you want to search in
-base_dir = "../wordpress"
-pattern = ".terraform*"
-
-# Build the full search pattern
-search_pattern = os.path.join(base_dir, pattern)
-
-for path in glob.glob(search_pattern):
-    if os.path.isdir(path):
-        shutil.rmtree(path)
-        print(f"✅ Deleted directory: {path}")
-    elif os.path.isfile(path):
-        os.remove(path)
-        print(f"✅ Deleted file: {path}")
-    else:
-        print(f"⚠️ Not found or unknown type: {path}")
 

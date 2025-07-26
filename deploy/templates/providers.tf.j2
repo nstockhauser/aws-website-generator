@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
     bucket         = "{{ bucket }}"
-    key            = "{{ website-name }}-terraform.tfstate"
-    region         = "{{ region }}"
+    key            = "{{ name }}-terraform.tfstate"
+    region         = "us-east-1"
     dynamodb_table = "terraform-state-locking"
     encrypt        = true
   }
@@ -28,14 +28,5 @@ terraform {
 
 provider "aws" {
   region = "{{ region }}"
-
-
-
-  default_tags {
-    tags = {
-      Environment = "Wordpress"
-    }
-  }
-
 }
 
