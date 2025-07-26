@@ -1,0 +1,15 @@
+
+
+output "instance-ssh-login" {
+  value = "ssh ubuntu@${aws_instance.website.public_dns} -i local-key"
+}
+
+output "website-url" {
+  value = "http://${aws_instance.website.public_ip}"
+}
+
+
+output "your_public_ip" {
+  value = data.http.curl_public_ip.body
+}
+

@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket         = "{{ bucket }}"
-    key            = "wordpress/terraform.tfstate"
+    key            = "{{ website-name }}-terraform.tfstate"
     region         = "{{ region }}"
     dynamodb_table = "terraform-state-locking"
     encrypt        = true
