@@ -54,7 +54,7 @@ resource "aws_instance" "website" {
     http_tokens   = "optional"
   }
 
-  user_data = file("../build/website-types/{{ type }}.sh")
+  user_data = file("../../website-types/{{ type }}.sh")
 
   tags = {
     Name = "{{ type }}-{{ name }} Website"

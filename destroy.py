@@ -19,14 +19,14 @@ destroy = inquirer.select(
     choices=destroy_options
 ).execute()
 
-#Core portion
+################   Core portion  ################
 
-# Delete Bucket
+# Delete Core Bucket
 def delete_bucket():
 
     s3_client = boto3.client('s3')
 
-    # get bucket_name
+    # Get Bucket_name
     bucket_list = s3_client.list_buckets()
 
     bucket_name = None
@@ -35,7 +35,6 @@ def delete_bucket():
         if bucket ['Name'].startswith('websites-tf-'):
             bucket_name = bucket['Name']
             break
-
 
     print(f"Found bucket name as {bucket_name}")
     
@@ -51,7 +50,7 @@ def delete_bucket():
 
     print (f"All Objects and versions in {bucket_name} were deleted successfully")
     
-    #actually delete teh bucket
+    #Delete Bucket
     s3_client.delete_bucket(Bucket=bucket_name)
 
     print(f'{bucket_name} was removed')
@@ -71,7 +70,7 @@ def delete_db_table(region):
 
 
 ## Website portion
-def delete_website_folder():
+def delete_website():
     base_dir = "sites/"
 
     dir_choices = [
@@ -88,7 +87,35 @@ def delete_website_folder():
     shutil.rmtree(target_path)
     print(f"✅ Deleted directory: {target_path}")
 
-# def delete_website_state():
+
+    s3_client = boto3.client('s3')
+
+    # Get Bucket_name
+    bucket_list = s3_client.list_buckets()
+
+    bucket_name = None
+
+    for bucket in bucket_list['Buckets']:
+        if bucket ['Name'].startswith('websites-tf-'):
+            bucket_name = bucket['Name']
+            break
+
+    print(f"Found bucket name as {bucket_name}")
+ 
+    object_key = dir_to_delete + ".tfstate"
+    object_versions = s3_client.list_object_versions(Bucket=bucket_name)
+    versions = object_versions.get('Versions', []) + object_versions.get('DeleteMarkers', [])
+    target_versions = [v for v in versions if v['Key'] == object_key]
+    for version in target_versions:
+        s3_client.delete_object(
+            Bucket = bucket_name,
+            Key=version['Key'],
+            VersionId=version['VersionId']
+        )
+
+    s3_client.delete_object(Bucket=bucket_name, Key=object_key)
+
+    print (f"All Objects and versions in {bucket_name} were deleted successfully")
 
 
 
@@ -99,8 +126,7 @@ if destroy == "core":
     delete_bucket()
     delete_db_table("us-east-1")
 else:
-    delete_website_folder()
-    # delete_website_state()
+    delete_website()
 
 
 
