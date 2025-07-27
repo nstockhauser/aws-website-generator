@@ -1,186 +1,181 @@
-# WordPress Generator
+# 📚 WordPress Generator – An Educational Sandbox for Terraform Backends
 
-This repository is a **two‑part automation sandbox** that demonstrates building and tearing down infrastructure using Python and Terraform on AWS.
+This repository serves as a **structured learning environment** for provisioning and decommissioning AWS infrastructure by integrating **Python automation**, **Jinja2 templating**, and **Terraform**.
 
-It contains:
+Rather than simply providing static code, this repository is intended to demonstrate key operational concepts in an accessible manner. It is designed for students and professionals who wish to gain a deeper understanding of backend state management and dynamic infrastructure generation.
 
-- **bootstrap/** – A Python automation lesson with scripts to generate and destroy Terraform backend configuration.
-- **wordpress/** – Terraform configuration that deploys a WordPress server.
+---
+
+## 🌋 Repository Structure
+
+The following structure exists at the root level:
+
+```
+wordpress-generator/
+├── generate.py          # Python script to create backend (S3/DynamoDB) and generate Terraform files
+├── destroy.py           # Python script to remove backend or site folders
+├── README.md
+│
+├── templates/           # Jinja2 templates used by generate.py
+│   ├── providers.tf.j2
+│   ├── main.tf.j2
+│   ├── data.tf.j2
+│   ├── outputs.tf.j2
+│
+├── website-types/       # Startup scripts for each website type
+│   ├── apache.sh
+│   ├── wordpress.sh
+│   └── (add new types, e.g., ghost.sh)
+│
+├── sites/               # Populated dynamically with generated site folders
+    ├── example-apache/  # Example generated folder containing Terraform files
+    ├── example-wordpress/
+    │   ├── providers.tf
+    │   ├── main.tf
+    │   └── ...
+```
 
 ---
 
 ## 📦 Dependencies
 
-Make sure these are installed at the system level before you begin:
+Ensure the following are installed prior to use:
 
-- [Python](https://www.python.org/downloads/)
+- [Python 3.x](https://www.python.org/downloads/)
 - [Terraform](https://developer.hashicorp.com/terraform/install)
-- [pip](https://pip.pypa.io/en/stable/installation/)
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
-- [Git](https://git-scm.com/) _(optional but recommended)_
+- [pip](https://pip.pypa.io/en/stable/installation/)
+- [Git](https://git-scm.com/) (optional but recommended)
+
+**Python packages in use:**
+
+```
+boto3
+jinja2
+InquirerPy
+shutil (standard library)
+os (standard library)
+random (standard library)
+string (standard library)
+```
+
+It is recommended to run this environment in [Visual Studio Code](https://code.visualstudio.com/) with a Python virtual environment for optimal workflow.
 
 ---
 
-## 🏗️ Scripts Overview
+## ✨ Operational Overview
 
-### `bootstrap/generator.py`
+1. **Execution of **``
 
-- Uses **jinja2** to process `templates/providers.tf.j2`.
-- Prompts for a region.
-- Creates:
-  - An S3 bucket for your Terraform backend.
-  - A DynamoDB table for state locking.
-  - A `providers.tf` in `wordpress/` with region-specific values.
-- Picks a random default subnet in your chosen region.
+   - Prompts for website name and type (e.g., Apache, WordPress).
+   - Creates a folder within `sites/` (e.g., `sites/example-apache/`).
+   - Creates or reuses an S3 bucket and DynamoDB table for Terraform state management.
+   - Renders Jinja2 templates in `templates/` to produce `providers.tf`, `main.tf`, and other Terraform files in the chosen site folder.
 
-### `bootstrap/teardown.py`
+2. **Deployment of the Site**
 
-- Cleans up:
-  - Removes the S3 bucket and DynamoDB table created during generation.
-  - Deletes the generated `providers.tf` in `wordpress/`.
-- Effectively **zeroizes** the repo for that region.
+   ```bash
+   cd sites/<your-site-folder>/
+   terraform init
+   terraform apply
+   # Confirm with "yes"
+   ```
 
----
+3. **Decommissioning the Site**
 
-## 🚀 Standard Operating Procedure (SoP)
+   ```bash
+   terraform destroy
+   # Confirm with "yes"
+   ```
 
-Before you run anything, make sure you’ve done these three things manually:
+4. **Full Cleanup of Backend Resources**
 
-1. **AWS Account:**  
-   Have an AWS account (Free Tier is fine).
-
-2. **AWS User:**  
-   Create a user with permissions and programmatic access credentials saved locally.
-
-3. **Dependencies Installed:**  
-   Ensure Python, Terraform, AWS CLI, and pip are installed.
+   ```bash
+   python destroy.py
+   # Select your site or select "core" to remove top level S3/DynamoDB backend resources
+   ```
 
 ---
 
-### ✅ Step 1: Configure AWS Credentials
+## 🔧 Extending the System
 
-Run:
+The repository is designed to be extensible. To add a new website type (e.g., Ghost):
+
+1. Create a new startup script in `website-types/` (e.g., `ghost.sh`).
+2. Edit `generate.py` to include `"ghost"` in the `websites` list for InquirerPy selection.
+3. Execute `python generate.py` and select the new type to generate your configuration.
+
+Terraform files will be rendered into a new folder under `sites/` (e.g., `sites/my-ghost/`).
+
+---
+
+## ✅ Prerequisites
+
+Prior to running, ensure the following:
+
+- A valid **AWS account** (Free Tier is sufficient).
+- An **IAM user** with programmatic access and AdministratorAccess permissions, configured on your local machine:
 
 ```bash
 aws configure
 ```
 
-Provide:
+Provide the following when prompted:
 
-- Access Key & Secret Key
-- Default region (not critical for deployment)
-- Default output: `json`
+- AWS Access Key ID and Secret Access Key
+- Default region (e.g., `us-east-1`)
+- Default output format (`json` recommended)
 
 ---
 
-### ✅ Step 2: Generate Terraform Backend
+## 🚀 Quickstart
 
-Navigate to the **bootstrap** folder:
+**Step 1: Generate Terraform Backend and Site Files**
 
 ```bash
-cd bootstrap
-python generator.py
+python generate.py
+# Follow prompts
+# Script will ask for website anme and theh type of website you want to build, and the region to build the webste resources in.
 ```
 
-The script will prompt for a region.  
-**Requirements:**  
-✅ Default VPC and related services must still exist in that region.
-
-After running:
-
-- S3 bucket and DynamoDB table are created.
-- A customized `providers.tf` is written into `wordpress/`.
-
----
-
-### ✅ Step 3: Deploy WordPress
-
-Navigate to the **wordpress** folder:
+**Step 2: Deploy Infrastructure**
 
 ```bash
-cd ../wordpress
+cd sites/<your-site-folder>/
 terraform init
 terraform apply
-# Type "yes" when prompted
+# Confirm with "yes"
 ```
 
-Terraform will:
-
-- Launch a WordPress server in the selected region.
-- Lock down SSH access to **your public IP only**.
-- Generate an ephemeral key pair in your local directory so you can SSH into the instance directly.
-- Randomly pick a default subnet in that region.
-
----
-
-### 🗑️ Step 4: Tear Down
-
-To clean up:
-
-1. **Destroy the WordPress deployment:**
+**Step 3: Destroy Site**
 
 ```bash
 terraform destroy
-# Type "yes" when prompted
+# Confirm with "yes"
 ```
 
-2. **Destroy the backend resources:**
+**Step 4: Clean Up Backend Resources (Optional)**
 
 ```bash
-cd ../bootstrap
-python teardown.py
-```
-
-This will remove:
-
-- S3 bucket and DynamoDB table.
-- The generated `providers.tf` file.
-
----
-
-## 📂 Project Structure
-
-```bash
-wordpress-generator/
-├── README.md
-├── bootstrap/
-│   ├── generator.py
-│   ├── teardown.py
-│   ├── templates/
-│   │   ├── providers.tf.j2
-│   ├── userdata.sh
-├── wordpress/
-│   ├── data.tf
-│   ├── main.tf
-│   ├── outputs.tf
-│   ├── providers.tf   # (Generated by generator.py)
+python destroy.py
+# Select "website" or "core"
 ```
 
 ---
 
-## 🔧 Useful Commands
+## 📚 Key Learning Objectives
 
-Get your public IP:
-
-```bash
-curl https://ipinfo.io/ip
-```
-
----
-
-## 🌱 Future Ideas
-
-- Add **Apache web server** option (HTML/CSS/JS deployment).
-- adjust to be able to launch eiother apache or wordpress
-- Cleanup README.md
-
-Bugs:
-
-- need a seperate URL basic on website type(need to fix in general) ssh -i "instance-key.pem" ubuntu@ec2-54-215-152-142.us-west-1.compute.amazonaws.com
-- I actually do want to make a depoyment tool to support multiple clients.
-  -- I need a central s3 bucket, and a per website key for the state file.
-  -- website based destroy/state.
+- **Terraform Remote Backends:** S3 for state storage and DynamoDB for state locking.
+- **Python Automation:** Use boto3 to manage AWS resources programmatically.
+- **Jinja2 Templating:** Generate Terraform files dynamically.
+- **Extensibility:** Modify or add new website types with minimal effort.
 
 ---
 
-**Enjoy automating! 🚀**
+## 🌱 Future Enhancements
+
+- Additional website types (Ghost, Hugo, Nginx static hosting)
+
+---
+
+**Happy Learning and Automating!**

@@ -2,7 +2,6 @@ import boto3
 import os
 from InquirerPy import inquirer
 import shutil
-import glob
 
 
 
