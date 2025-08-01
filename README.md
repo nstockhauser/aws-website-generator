@@ -1,8 +1,8 @@
 # 📚 WordPress Generator – An Educational Sandbox for Terraform Backends
 
-This repository serves as a **structured learning environment** for provisioning and decommissioning AWS infrastructure by integrating **Python automation**, **Jinja2 templating**, and **Terraform**.
+This repository serves as a **structured learning environment** for provisioning and decommissioning AWS infrastructure by integrating **Python automation**, **Jinja2 templating**, and **Terraform** in the **AWS** Platform.
 
-Rather than simply providing static code, this repository is intended to demonstrate key operational concepts in an accessible manner. It is designed for students and professionals who wish to gain a deeper understanding of backend state management and dynamic infrastructure generation.
+Rather than simply providing static code, this repository is intended to demonstrate key operational concepts in an accessible manner. It is designed for students and professionals who wish to gain a deeper understanding of backend state management and dynamic infrastructure generation, as well as anyone wanting to have their one website.
 
 ---
 
@@ -50,28 +50,33 @@ Ensure the following are installed prior to use:
 **Python packages in use:**
 
 ```
-boto3
-jinja2
-InquirerPy
-shutil (standard library)
-os (standard library)
-random (standard library)
-string (standard library)
+External Packages
+- boto3
+- jinja2
+- InquirerPy
+
+Standard Library Packages
+- shutil
+- os
+- random
+- string
 ```
 
 It is recommended to run this environment in [Visual Studio Code](https://code.visualstudio.com/) with a Python virtual environment for optimal workflow.
 
 ---
 
-## ✨ Operational Overview
+## 🚀 Quickstart
 
-1. **Execution of **``
+1. **Generating the Site**
 
-   - Prompts for website name and type (e.g., Apache, WordPress).
-   - Creates a folder within `sites/` (e.g., `sites/example-apache/`).
-   - Creates or reuses an S3 bucket and DynamoDB table for Terraform state management.
-   - Renders Jinja2 templates in `templates/` to produce `providers.tf`, `main.tf`, and other Terraform files in the chosen site folder.
-
+    ```bash
+    cd /aws-website-generator
+    python generate.py
+   # Prompts for Website Name (Cosmetic e.g. "test")
+   # Prompts for Website Type (Selects from website-types)
+   ```
+    
 2. **Deployment of the Site**
 
    ```bash
@@ -88,11 +93,18 @@ It is recommended to run this environment in [Visual Studio Code](https://code.v
    # Confirm with "yes"
    ```
 
-4. **Full Cleanup of Backend Resources**
+4. **Cleanup of Website Resources**
 
    ```bash
    python destroy.py
-   # Select your site or select "core" to remove top level S3/DynamoDB backend resources
+   # Select your site
+   ```
+
+5. **Full Cleanup**
+
+   ```bash
+   python destroy.py
+   # Select "core" to remove top level S3/DynamoDB backend resources
    ```
 
 ---
@@ -125,41 +137,6 @@ Provide the following when prompted:
 - AWS Access Key ID and Secret Access Key
 - Default region (e.g., `us-east-1`)
 - Default output format (`json` recommended)
-
----
-
-## 🚀 Quickstart
-
-**Step 1: Generate Terraform Backend and Site Files**
-
-```bash
-python generate.py
-# Follow prompts
-# Script will ask for website anme and theh type of website you want to build, and the region to build the webste resources in.
-```
-
-**Step 2: Deploy Infrastructure**
-
-```bash
-cd sites/<your-site-folder>/
-terraform init
-terraform apply
-# Confirm with "yes"
-```
-
-**Step 3: Destroy Site**
-
-```bash
-terraform destroy
-# Confirm with "yes"
-```
-
-**Step 4: Clean Up Backend Resources (Optional)**
-
-```bash
-python destroy.py
-# Select "website" or "core"
-```
 
 ---
 
