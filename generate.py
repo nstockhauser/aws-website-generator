@@ -7,16 +7,16 @@ from InquirerPy import inquirer
 
 
 
-websites = [
+websites = [ # Add more options here if you want a custom userdata.sh
     "apache",
-    "wordpress" ## Add more options here if you want a custom userdata.sh
+    "wordpress"
 ]
 
-regions = [
+regions = [ # Add another region not included that you want to use
     "us-east-1",
     "us-east-2",
     "us-west-1",
-    "us-west-2"  # Add another region not included that you want to use
+    "us-west-2"  
 ]
 
 
@@ -62,10 +62,8 @@ def create_bucket():
         if bucket ['Name'].startswith('websites-tf-'):
             bucket_name = bucket['Name']
             print (f"Found existing bucket: {bucket_name}")
-            return bucket_name
+            return bucket_name # stop here, no need to create again
     
-
-
     # Generate a random string of 4
     characters = string.ascii_lowercase + string.digits  # Include both letters and digits
     random_string = ''.join(random.choice(characters) for _ in range(4))
@@ -115,7 +113,7 @@ def create_dynamodb_table(region):
     # Check if our table already exists
     if table_name in existing_tables:
         print(f"✅ Found existing DynamoDB table: {table_name}")
-        return table_name  # stop here, no need to create    
+        return table_name  # stop here, no need to Create again
 
 
     dynamo_client.create_table(
@@ -144,10 +142,7 @@ bucket_name = create_bucket()
 create_dynamodb_table("us-east-1")
 
 
-
-
 ########################  JINJA2 Section #############################
-
 
 # Makes initial Folder 
 output_dir = os.path.join( "sites", dir_name)
