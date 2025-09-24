@@ -11,7 +11,7 @@ Rather than simply providing static code, this repository is intended to demonst
 The following structure exists at the root level:
 
 ```
-wordpress-generator/
+aws-website-generator/
 ├── generate.py          # Python script to create backend (S3/DynamoDB) and generate Terraform files
 ├── destroy.py           # Python script to remove backend or site folders
 ├── README.md
@@ -125,7 +125,7 @@ Terraform files will be rendered into a new folder under `sites/` (e.g., `sites/
 
 Prior to running, ensure the following:
 
-- A valid **AWS account** (Free Tier is sufficient).
+- A valid **AWS account**.
 - An **IAM user** with programmatic access and AdministratorAccess permissions, configured on your local machine:
 
 ```bash
@@ -152,7 +152,12 @@ Provide the following when prompted:
 ## 🌱 Future Enhancements
 
 - Additional website types (Ghost, Hugo, Nginx static hosting)
+- IAM least privilege
+- Cloudformation for user credentials
+- **Azure Capabilities**
+- Underlying server access
 
 ---
 
 **Happy Learning and Automating!**
+
