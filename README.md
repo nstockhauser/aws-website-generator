@@ -156,9 +156,8 @@ Provide the following when prompted:
 - Cloudformation for user credentials
 - **Azure Capabilities**
 - Underlying server access
-- requirements file
+- requirements.txt file
 ---
 
-**Happy Learning and Automating!**
 
 
